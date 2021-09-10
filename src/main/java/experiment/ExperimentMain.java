@@ -1,7 +1,8 @@
 package experiment;
 
+import ev3dev.actuators.Sound;
 import ev3dev.actuators.lego.motors.EV3LargeRegulatedMotor;
-import ev3dev.sensors.Battery;
+import ev3dev.actuators.lego.motors.Motor;
 import lejos.hardware.port.MotorPort;
 import lejos.utility.Delay;
 import org.slf4j.Logger;
@@ -12,53 +13,49 @@ public class ExperimentMain {
     public static Logger LOGGER = LoggerFactory.getLogger(ExperimentMain.class);
 
     public static int DELAY = 2000;
-
-    public static final EV3LargeRegulatedMotor mA = new EV3LargeRegulatedMotor(MotorPort.A);
+    public static final int MOTOR_SPEED = Constants.MOTOR_SPEED;
+    static final EV3LargeRegulatedMotor motorLeft = new EV3LargeRegulatedMotor(MotorPort.A);
+    static final EV3LargeRegulatedMotor motorRight = new EV3LargeRegulatedMotor(MotorPort.B);
 
     public static void main(String[] args) {
-        final EV3LargeRegulatedMotor motorLeft = new EV3LargeRegulatedMotor(MotorPort.A);
-        final EV3LargeRegulatedMotor motorRight = new EV3LargeRegulatedMotor(MotorPort.B);
-
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            public void run() {
-                System.out.println("Emergency Stop");
-                motorLeft.stop();
-                motorRight.stop();
-            }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("Emergency Stop");
+            motorLeft.stop();
+            motorRight.stop();
         }));
 
-        System.out.println("Defining the Stop mode");
-        motorLeft.brake();
-        motorRight.brake();
+        motorRight.setSpeed(MOTOR_SPEED);
+        motorLeft.setSpeed(MOTOR_SPEED);
 
-        System.out.println("Defining motor speed");
-        final int motorSpeed = 200;
-        motorLeft.setSpeed(motorSpeed);
-        motorRight.setSpeed(motorSpeed);
+        var sound = Sound.getInstance();
 
-        System.out.println("Go Forward with the motors");
-        motorLeft.forward();
-        motorRight.forward();
+        sound.setVolume(100);
+        sound.twoBeeps();
+        Delay.msDelay(200);
 
-        Delay.msDelay(2000);
+        var motors = new SynchronizedMotors(motorLeft, motorRight);
 
-        System.out.println("Stop motors");
-        motorLeft.stop();
-        motorRight.stop();
-
-        System.out.println("Go Backward with the motors");
-        motorLeft.backward();
-        motorRight.backward();
-
-        Delay.msDelay(2000);
-
-        System.out.println("Stop motors");
-        motorLeft.stop();
-        motorRight.stop();
-
-        System.out.println("Checking Battery");
-        System.out.println("Voltage: " + Battery.getInstance().getVoltage());
+        motors.driveCentimeters(100);
+        motors.turnDegrees(410);
+        motors.driveCentimeters(100);
 
         System.exit(0);
+    }
+
+    public static void initializeMotors() {
+        motorLeft.setSpeed(MOTOR_SPEED);
+        motorRight.setSpeed(MOTOR_SPEED);
+    }
+
+    public static void turnDegrees(int degrees) {
+        motorRight.rotate(degrees, true);
+        motorLeft.rotate(degrees * -1, true);
+    }
+
+    public static void driveCentimeters(int distance) {
+        motorLeft.rotate((int) ((distance / Constants.WHEEL_DIAMETER) * 360), true);
+        motorRight.rotate((int) ((distance / Constants.WHEEL_DIAMETER) * 360), true);
+
+        motorRight.waitComplete();
     }
 }

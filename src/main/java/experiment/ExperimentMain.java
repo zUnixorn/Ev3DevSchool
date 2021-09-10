@@ -26,7 +26,7 @@ public class ExperimentMain {
                 motorRight.stop();
             }
         }));
-
+        
         System.out.println("Defining the Stop mode");
         motorLeft.brake();
         motorRight.brake();

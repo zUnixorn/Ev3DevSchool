@@ -57,7 +57,7 @@ public class ExperimentMain {
         motorRight.stop();
 
         System.out.println("Checking Battery");
-        System.out.println("Votage: " + Battery.getInstance().getVoltage());
+        System.out.println("Voltage: " + Battery.getInstance().getVoltage());
 
         System.exit(0);
     }

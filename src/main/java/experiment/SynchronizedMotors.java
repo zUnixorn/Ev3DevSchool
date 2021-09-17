@@ -25,13 +25,13 @@ public class SynchronizedMotors {
 	}
 
 	public void driveCurve(int curveDiameter) {
-		double innerCurveDiameter = ((curveDiameter - (Constants.WHEEL_DIAMETER / 2)) * Math.PI);
-		double outerCurveDiameter = ((curveDiameter + (Constants.WHEEL_DIAMETER / 2)) * Math.PI);
+		double innerCurveCircumference = ((curveDiameter - (Constants.WHEEL_DIAMETER / 2)) * Math.PI);
+		double outerCurveCircumference = ((curveDiameter + (Constants.WHEEL_DIAMETER / 2)) * Math.PI);
 
-		double innerCurveAngle = cmToAngle(innerCurveDiameter);
-		double outerCurveAngle = cmToAngle(outerCurveDiameter);
+		double innerCurveAngle = cmToAngle(innerCurveCircumference);
+		double outerCurveAngle = cmToAngle(outerCurveCircumference);
 
-		double speedCoEfficient = outerCurveAngle / innerCurveAngle;
+		double speedCoEfficient = innerCurveAngle / outerCurveAngle;
 		double innerSpeed = Constants.MOTOR_SPEED * (speedCoEfficient);
 
 		motorLeft.setSpeed((int) innerSpeed);

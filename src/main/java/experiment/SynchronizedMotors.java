@@ -9,6 +9,14 @@ public class SynchronizedMotors {
 	public SynchronizedMotors(EV3LargeRegulatedMotor motorLeft, EV3LargeRegulatedMotor motorRight) {
 		this.motorLeft = motorLeft;
 		this.motorRight = motorRight;
+
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			System.out.println("Emergency Stop");
+			motorLeft.stop();
+			motorRight.stop();
+		}));
+
+		setSpeed(Constants.MOTOR_SPEED);
 	}
 
 	public void setSpeed(int speed) {
@@ -16,19 +24,54 @@ public class SynchronizedMotors {
 		motorRight.setSpeed(speed);
 	}
 
-	public void turnDegrees(int degrees) {
-		setSpeed(Constants.SLOW_MOTOR_SPEED);
+	public void driveCurve(int curveDiameter) {
+		double innerCurveDiameter = ((curveDiameter - (Constants.WHEEL_DIAMETER / 2)) * Math.PI);
+		double outerCurveDiameter = ((curveDiameter + (Constants.WHEEL_DIAMETER / 2)) * Math.PI);
 
-		motorLeft.rotate(degrees * -1, true);
-		motorRight.rotate(degrees, true);
+		double innerCurveAngle = cmToAngle(innerCurveDiameter);
+		double outerCurveAngle = cmToAngle(outerCurveDiameter);
+
+		double speedCoEfficient = outerCurveAngle / innerCurveAngle;
+		double innerSpeed = Constants.MOTOR_SPEED * (speedCoEfficient);
+
+		motorLeft.setSpeed((int) innerSpeed);
+		motorRight.setSpeed(Constants.MOTOR_SPEED);
+
+		motorLeft.rotate((int) innerCurveAngle, true);
+		motorRight.rotate((int) outerCurveAngle, true);
+
 		motorRight.waitComplete();
+		motorLeft.waitComplete();
 
 		setSpeed(Constants.MOTOR_SPEED);
 	}
 
-	public void driveCentimeters(int distance) {
-		motorLeft.rotate((int) ((distance / Constants.WHEEL_DIAMETER) * 360), true);
-		motorRight.rotate((int) ((distance / Constants.WHEEL_DIAMETER) * 360), true);
+	public void turnDegrees(int degrees) {
+		setSpeed(Constants.SLOW_MOTOR_SPEED);
+		int angleToRotate = cmToAngle((((double) degrees) / 360) * Math.PI * Constants.WHEEL_DISTANCE);
+
+		System.out.println("The angle to rotate is " + angleToRotate);
+
+		motorLeft.rotate(angleToRotate * -1, true);
+		motorRight.rotate(angleToRotate, true);
+
 		motorRight.waitComplete();
+		setSpeed(Constants.MOTOR_SPEED);
+	}
+
+	public void driveCentimeters(int distance) {
+		int angleToRotate = cmToAngle(distance);
+
+		motorLeft.rotate(angleToRotate, true);
+		motorRight.rotate(angleToRotate, true);
+		motorRight.waitComplete();
+	}
+
+	private int cmToAngle(int cm) {
+		return (int) ((cm / Constants.WHEEL_DIAMETER) * 360);
+	}
+
+	private int cmToAngle(double cm) {
+		return (int) ((cm / Constants.WHEEL_DIAMETER) * 360);
 	}
 }

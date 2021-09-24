@@ -22,15 +22,16 @@ public class ExperimentMain {
 		motorRight.setSpeed(MOTOR_SPEED);
 		motorLeft.setSpeed(MOTOR_SPEED);
 
-		var sound = Sound.getInstance();
+//		var sound = Sound.getInstance();
+//
+//		sound.setVolume(100);
+//		sound.twoBeeps();
+		Delay.msDelay(800);
 
-		sound.setVolume(100);
-		sound.twoBeeps();
-		Delay.msDelay(200);
-
+		LOGGER.debug("test");
 		var motors = new SynchronizedMotors(motorLeft, motorRight);
 
-		motors.driveCurve(25);
+		motors.driveCircle(50);
 
 		Delay.msDelay(3000);
 
@@ -52,8 +53,8 @@ public class ExperimentMain {
 	}
 
 	public static void driveCentimeters(int distance) {
-		motorLeft.rotate((int) ((distance / Constants.WHEEL_DIAMETER) * 360), true);
-		motorRight.rotate((int) ((distance / Constants.WHEEL_DIAMETER) * 360), true);
+		motorLeft.rotate((int) ((distance / Constants.WHEEL_CIRCUMFERENCE) * 360), true);
+		motorRight.rotate((int) ((distance / Constants.WHEEL_CIRCUMFERENCE) * 360), true);
 
 		motorRight.waitComplete();
 	}

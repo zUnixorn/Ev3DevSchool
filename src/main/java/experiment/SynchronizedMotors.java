@@ -1,5 +1,6 @@
 package experiment;
 
+import ev3dev.actuators.Sound;
 import ev3dev.actuators.lego.motors.EV3LargeRegulatedMotor;
 
 public class SynchronizedMotors {
@@ -24,9 +25,9 @@ public class SynchronizedMotors {
 		motorRight.setSpeed(speed);
 	}
 
-	public void driveCurve(int curveDiameter) {
-		double innerCurveCircumference = ((curveDiameter - (Constants.WHEEL_DIAMETER / 2)) * Math.PI);
-		double outerCurveCircumference = ((curveDiameter + (Constants.WHEEL_DIAMETER / 2)) * Math.PI);
+	public void driveCircle(int circleDiameter) {
+		double innerCurveCircumference = ((circleDiameter - Constants.WHEEL_DISTANCE) * Math.PI);
+		double outerCurveCircumference = ((circleDiameter + Constants.WHEEL_DISTANCE) * Math.PI);
 
 		double innerCurveAngle = cmToAngle(innerCurveCircumference);
 		double outerCurveAngle = cmToAngle(outerCurveCircumference);
@@ -34,26 +35,39 @@ public class SynchronizedMotors {
 		double speedCoEfficient = innerCurveAngle / outerCurveAngle;
 		double innerSpeed = Constants.MOTOR_SPEED * (speedCoEfficient);
 
-		motorLeft.setSpeed((int) innerSpeed);
+		motorLeft.setSpeed((int) Math.abs(innerSpeed));
 		motorRight.setSpeed(Constants.MOTOR_SPEED);
 
-		motorLeft.rotate((int) innerCurveAngle, true);
-		motorRight.rotate((int) outerCurveAngle, true);
+		motorLeft.rotate((int) Math.round(innerCurveAngle), true);
+		motorRight.rotate((int) Math.round(outerCurveAngle), true);
 
 		motorRight.waitComplete();
 		motorLeft.waitComplete();
+
+		System.out.println("Circle diameter" + circleDiameter);
+
+		System.out.println("inner curve circumference: " + innerCurveCircumference);
+		System.out.println("outer curve circumference: " + outerCurveCircumference);
+
+		System.out.println("inner curve angle: " + innerCurveAngle);
+		System.out.println("outer curve angle: " + outerCurveAngle);
+
+		System.out.println("Speed coefficient: " + speedCoEfficient);
+		System.out.println("Inner motor speed: " + innerSpeed);
+
+
 
 		setSpeed(Constants.MOTOR_SPEED);
 	}
 
 	public void turnDegrees(int degrees) {
 		setSpeed(Constants.SLOW_MOTOR_SPEED);
-		int angleToRotate = cmToAngle((((double) degrees) / 360) * Math.PI * Constants.WHEEL_DISTANCE);
+		double angleToRotate = cmToAngle((((double) degrees) / 360) * Math.PI * Constants.WHEEL_DISTANCE);
 
 		System.out.println("The angle to rotate is " + angleToRotate);
 
-		motorLeft.rotate(angleToRotate * -1, true);
-		motorRight.rotate(angleToRotate, true);
+		motorLeft.rotate((int) angleToRotate * -1, true);
+		motorRight.rotate((int) angleToRotate, true);
 
 		motorRight.waitComplete();
 		setSpeed(Constants.MOTOR_SPEED);
@@ -68,10 +82,10 @@ public class SynchronizedMotors {
 	}
 
 	private int cmToAngle(int cm) {
-		return (int) ((cm / Constants.WHEEL_DIAMETER) * 360);
+		return (int) ((cm / Constants.WHEEL_CIRCUMFERENCE) * 360);
 	}
 
-	private int cmToAngle(double cm) {
-		return (int) ((cm / Constants.WHEEL_DIAMETER) * 360);
+	private double cmToAngle(double cm) {
+		return (cm / Constants.WHEEL_CIRCUMFERENCE) * 360;
 	}
 }

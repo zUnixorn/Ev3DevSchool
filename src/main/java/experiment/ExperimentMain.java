@@ -37,8 +37,11 @@ public class ExperimentMain {
 				Constants.WHEEL_DISTANCE
 		);
 
-		motors.driveCircle(50);
+		System.out.println("Ready");
+		Delay.msDelay(2000);
+		motors.driveCurveDegrees(180, 50);
 
+//		motors.driveCentimeters(20);
 		Delay.msDelay(3000);
 
 		System.exit(0);

@@ -44,6 +44,43 @@ public class SynchronizedMotors {
 		motorRight.setSpeed(speed);
 	}
 
+	public void driveCurveDegrees(int degrees, int radius) {
+		double partOfCircle = (double) degrees / 360;
+
+		double innerCurveCircumference = (2 * (radius - (wheel_distance / 2)) * Math.PI);
+		double outerCurveCircumference = (2 * (radius + (wheel_distance)) * Math.PI);
+
+		double innerCurveAngle = cmToAngle(innerCurveCircumference);
+		double outerCurveAngle = cmToAngle(outerCurveCircumference);
+
+		double speedCoEfficient = innerCurveAngle / outerCurveAngle;
+		double innerSpeed = motor_speed * (speedCoEfficient);
+
+		motorLeft.setSpeed((int) Math.abs(innerSpeed));
+		motorRight.setSpeed(motor_speed);
+
+		motorLeft.rotate((int) Math.round(partOfCircle * innerCurveAngle), true);
+		motorRight.rotate((int) Math.round(partOfCircle * outerCurveAngle), true);
+
+		motorRight.waitComplete();
+		motorLeft.waitComplete();
+
+		System.out.println("inner curve circumference: " + innerCurveCircumference);
+		System.out.println("outer curve circumference: " + outerCurveCircumference);
+
+		System.out.println("inner curve angle: " + innerCurveAngle);
+		System.out.println("outer curve angle: " + outerCurveAngle);
+
+		System.out.println("Speed coefficient: " + speedCoEfficient);
+		System.out.println("Inner motor speed: " + innerSpeed);
+
+		System.out.println("Circle degrees part factor: " + partOfCircle);
+
+		System.out.println("inner circle half: " + Math.round(partOfCircle * innerCurveAngle));
+		System.out.println("outer circle half: " + Math.round(partOfCircle * outerCurveAngle));
+
+	}
+
 	public void driveCircle(int circleDiameter) {
 		double innerCurveCircumference = ((circleDiameter - wheel_distance) * Math.PI);
 		double outerCurveCircumference = ((circleDiameter + wheel_distance) * Math.PI);

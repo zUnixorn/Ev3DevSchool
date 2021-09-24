@@ -1,5 +1,6 @@
 package experiment;
 
+import ev3dev.actuators.Sound;
 import ev3dev.actuators.lego.motors.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.utility.Delay;
@@ -21,10 +22,10 @@ public class ExperimentMain {
 		motorRight.setSpeed(MOTOR_SPEED);
 		motorLeft.setSpeed(MOTOR_SPEED);
 
-//		var sound = Sound.getInstance();
-//
-//		sound.setVolume(100);
-//		sound.twoBeeps();
+		var sound = Sound.getInstance();
+
+		sound.setVolume(100);
+		sound.twoBeeps();
 		Delay.msDelay(800);
 
 		LOGGER.debug("test");
@@ -39,32 +40,14 @@ public class ExperimentMain {
 
 		System.out.println("Ready");
 		Delay.msDelay(2000);
-		motors.driveCurveDegrees(180, 50);
+
+		motors.driveCurveDegrees(180, 15, true);
+		motors.driveCircle(15, false);
+		motors.driveCurveDegrees(180, 15, true);
 
 //		motors.driveCentimeters(20);
 		Delay.msDelay(3000);
 
 		System.exit(0);
-	}
-
-	public static void driveCircle(SynchronizedMotors motors) {
-
-	}
-
-	public static void initializeMotors() {
-		motorLeft.setSpeed(MOTOR_SPEED);
-		motorRight.setSpeed(MOTOR_SPEED);
-	}
-
-	public static void turnDegrees(int degrees) {
-		motorRight.rotate(degrees, true);
-		motorLeft.rotate(degrees * -1, true);
-	}
-
-	public static void driveCentimeters(int distance) {
-		motorLeft.rotate((int) ((distance / Constants.WHEEL_CIRCUMFERENCE) * 360), true);
-		motorRight.rotate((int) ((distance / Constants.WHEEL_CIRCUMFERENCE) * 360), true);
-
-		motorRight.waitComplete();
 	}
 }

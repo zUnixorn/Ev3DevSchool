@@ -1,4 +1,4 @@
-package lesson;
+package wasd;
 
 import ev3dev.actuators.Sound;
 import ev3dev.actuators.lego.motors.EV3LargeRegulatedMotor;

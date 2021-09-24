@@ -1,6 +1,5 @@
 package experiment;
 
-import ev3dev.actuators.Sound;
 import ev3dev.actuators.lego.motors.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.utility.Delay;
@@ -29,7 +28,14 @@ public class ExperimentMain {
 		Delay.msDelay(800);
 
 		LOGGER.debug("test");
-		var motors = new SynchronizedMotors(motorLeft, motorRight);
+		var motors = new SynchronizedMotors(
+				motorLeft,
+				motorRight,
+				Constants.MOTOR_SPEED,
+				Constants.SLOW_MOTOR_SPEED,
+				Constants.WHEEL_CIRCUMFERENCE,
+				Constants.WHEEL_DISTANCE
+		);
 
 		motors.driveCircle(50);
 

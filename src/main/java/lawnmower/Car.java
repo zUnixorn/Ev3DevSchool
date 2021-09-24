@@ -1,8 +1,10 @@
 package lawnmower;
 
+import ev3dev.actuators.Sound;
 import ev3dev.actuators.lego.motors.EV3LargeRegulatedMotor;
 import ev3dev.sensors.ev3.EV3UltrasonicSensor;
 import experiment.ExperimentMain;
+import lejos.hardware.Sounds;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.robotics.SampleProvider;
@@ -16,8 +18,16 @@ public class Car {
     public EV3UltrasonicSensor ultrasonic = new EV3UltrasonicSensor(SensorPort.S2);
     public EV3LargeRegulatedMotor motorLeft = new EV3LargeRegulatedMotor(MotorPort.A);
     public EV3LargeRegulatedMotor motorRight = new EV3LargeRegulatedMotor(MotorPort.B);
+    public EV3LargeRegulatedMotor motorTop = new EV3LargeRegulatedMotor(MotorPort.C);
 
     public SampleProvider samples = ultrasonic.getDistanceMode();
+
+    public float positionMotorTop = 0;
+
+    int lastAngle = 0;
+    boolean wayBack = false;
+
+    public int TOP_OFFSET = 90;
 
     public Car() {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
@@ -27,6 +37,14 @@ public class Car {
                 motorRight.stop();
             }
         }));
+
+        this.beep();
+        this.beep();
+
+        this.motorTop.setAcceleration(4000);
+        this.motorTop.setSpeed(90);
+        this.motorTop.rotate(this.TOP_OFFSET);
+        this.positionMotorTop = this.motorTop.getPosition();
     }
 
     public void forward() {
@@ -44,6 +62,12 @@ public class Car {
         this.motorLeft.stop();
     }
 
+    public void beep() {
+        Sound sound = Sound.getInstance();
+        sound.setVolume(100);
+        sound.beep();
+    }
+
     public void turnRight(int angle) {
         int rotation = cmToAngle((((double)angle) / 360) * Math.PI * 11.5);
 
@@ -51,6 +75,38 @@ public class Car {
         this.motorLeft.rotate(rotation, true);
 
         this.awaitMotors();
+    }
+
+//    public void wave(int angle) {
+//        this.motorTop.rotate(angle);
+//    }
+
+    public void waveNext() {
+        System.out.println(this.lastAngle + "");
+
+        if (this.lastAngle >= 60) {
+            this.wayBack = true;
+        } else if (this.lastAngle <= 0) {
+            this.wayBack = false;
+        }
+
+        if (this.wayBack) {
+            this.motorTop.rotate(-10);
+            this.lastAngle -= 10;
+        } else {
+            this.motorTop.rotate(10);
+            this.lastAngle += 10;
+        }
+//        this.lastAngle = ((this.lastAngle + 10) % 90) - 45;
+//        this.motorTop.rotate((int) (this.lastAngle));
+    }
+
+    public void setPositionMotorTop() {
+        this.positionMotorTop = this.motorTop.getPosition() - TOP_OFFSET;
+    }
+
+    public void waveAwait() {
+        this.motorTop.waitComplete();
     }
 
     public void forwardCm(double cm) {

@@ -29,7 +29,7 @@ public class ExperimentMain {
 		Delay.msDelay(800);
 
 		LOGGER.debug("test");
-		var motors = new SynchronizedMotors(
+		var motors = new Pilot(
 				motorLeft,
 				motorRight,
 				Constants.MOTOR_SPEED,

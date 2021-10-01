@@ -2,7 +2,7 @@ package experiment;
 
 import ev3dev.actuators.lego.motors.EV3LargeRegulatedMotor;
 
-public class SynchronizedMotors {
+public class Pilot {
 	private final EV3LargeRegulatedMotor motorLeft;
 	private final EV3LargeRegulatedMotor motorRight;
 	private final int motor_speed;
@@ -10,13 +10,13 @@ public class SynchronizedMotors {
 	private final double wheel_circumference;
 	private final double wheel_distance;
 
-	public SynchronizedMotors(EV3LargeRegulatedMotor motorLeft, EV3LargeRegulatedMotor motorRight, int motor_speed, int slow_motor_speed, double wheel_circumference, double wheel_distance) {
+	public Pilot(EV3LargeRegulatedMotor motorLeft, EV3LargeRegulatedMotor motorRight, int motorSpeed, int slowMotorSpeed, double wheelCircumference, double wheelDistance) {
 		this.motorLeft = motorLeft;
 		this.motorRight = motorRight;
-		this.motor_speed = motor_speed;
-		this.slow_motor_speed = slow_motor_speed;
-		this.wheel_circumference = wheel_circumference;
-		this.wheel_distance = wheel_distance;
+		this.motor_speed = motorSpeed;
+		this.slow_motor_speed = slowMotorSpeed;
+		this.wheel_circumference = wheelCircumference;
+		this.wheel_distance = wheelDistance;
 
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			System.out.println("Emergency Stop");
@@ -24,10 +24,10 @@ public class SynchronizedMotors {
 			motorRight.stop();
 		}));
 
-		setSpeed(motor_speed);
+		setSpeed(motorSpeed);
 	}
 
-	public SynchronizedMotors(EV3LargeRegulatedMotor motorLeft, EV3LargeRegulatedMotor motorRight) {
+	public Pilot(EV3LargeRegulatedMotor motorLeft, EV3LargeRegulatedMotor motorRight) {
 		this(
 				motorLeft,
 				motorRight,

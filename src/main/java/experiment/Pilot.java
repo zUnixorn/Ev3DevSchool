@@ -5,18 +5,18 @@ import ev3dev.actuators.lego.motors.EV3LargeRegulatedMotor;
 public class Pilot {
 	private final EV3LargeRegulatedMotor motorLeft;
 	private final EV3LargeRegulatedMotor motorRight;
-	private final int motor_speed;
-	private final int slow_motor_speed;
-	private final double wheel_circumference;
-	private final double wheel_distance;
+	private final int motorSpeed;
+	private final int slowMotorSpeed;
+	private final double wheelCircumference;
+	private final double wheelDistance;
 
 	public Pilot(EV3LargeRegulatedMotor motorLeft, EV3LargeRegulatedMotor motorRight, int motorSpeed, int slowMotorSpeed, double wheelCircumference, double wheelDistance) {
 		this.motorLeft = motorLeft;
 		this.motorRight = motorRight;
-		this.motor_speed = motorSpeed;
-		this.slow_motor_speed = slowMotorSpeed;
-		this.wheel_circumference = wheelCircumference;
-		this.wheel_distance = wheelDistance;
+		this.motorSpeed = motorSpeed;
+		this.slowMotorSpeed = slowMotorSpeed;
+		this.wheelCircumference = wheelCircumference;
+		this.wheelDistance = wheelDistance;
 
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			System.out.println("Emergency Stop");
@@ -51,25 +51,25 @@ public class Pilot {
 	public void driveCurveDegrees(int degrees, int radius, boolean driveLeft) {
 		double partOfCircle = (double) degrees / 360;
 
-		double innerCurveCircumference = (2 * (radius - (wheel_distance / 2)) * Math.PI);
-		double outerCurveCircumference = (2 * (radius + (wheel_distance / 2)) * Math.PI);
+		double innerCurveCircumference = (2 * (radius - (wheelDistance / 2)) * Math.PI);
+		double outerCurveCircumference = (2 * (radius + (wheelDistance / 2)) * Math.PI);
 
 		double innerCurveAngle = cmToAngle(innerCurveCircumference);
 		double outerCurveAngle = cmToAngle(outerCurveCircumference);
 
 		double speedCoEfficient = innerCurveAngle / outerCurveAngle;
-		double innerSpeed = motor_speed * (speedCoEfficient);
+		double innerSpeed = motorSpeed * (speedCoEfficient);
 
 		if (driveLeft) {
 			motorLeft.setSpeed((int) Math.abs(innerSpeed));
-			motorRight.setSpeed(motor_speed);
+			motorRight.setSpeed(motorSpeed);
 
 
 			motorLeft.rotate((int) Math.round(partOfCircle * innerCurveAngle), true);
 			motorRight.rotate((int) Math.round(partOfCircle * outerCurveAngle), true);
 		} else {
 			motorRight.setSpeed((int) Math.abs(innerSpeed));
-			motorLeft.setSpeed(motor_speed);
+			motorLeft.setSpeed(motorSpeed);
 
 			motorRight.rotate((int) Math.round(partOfCircle * innerCurveAngle), true);
 			motorLeft.rotate((int) Math.round(partOfCircle * outerCurveAngle), true);
@@ -96,8 +96,8 @@ public class Pilot {
 	}
 
 	public void turnDegrees(int degrees) {
-		setSpeed(slow_motor_speed);
-		double angleToRotate = cmToAngle((((double) degrees) / 360) * Math.PI * wheel_distance);
+		setSpeed(slowMotorSpeed);
+		double angleToRotate = cmToAngle((((double) degrees) / 360) * Math.PI * wheelDistance);
 
 		System.out.println("The angle to rotate is " + angleToRotate);
 
@@ -105,7 +105,7 @@ public class Pilot {
 		motorRight.rotate((int) angleToRotate, true);
 
 		motorRight.waitComplete();
-		setSpeed(motor_speed);
+		setSpeed(motorSpeed);
 	}
 
 	public void driveCentimeters(int distance) {
@@ -117,11 +117,11 @@ public class Pilot {
 	}
 
 	private int cmToAngle(int cm) {
-		return (int) ((cm / wheel_circumference) * 360);
+		return (int) ((cm / wheelCircumference) * 360);
 	}
 
 	private double cmToAngle(double cm) {
-		return (cm / wheel_circumference) * 360;
+		return (cm / wheelCircumference) * 360;
 	}
 
 	//Exists only to fulfill the tasks for school

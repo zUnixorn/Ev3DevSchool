@@ -28,7 +28,6 @@ public class ExperimentMain {
 		sound.twoBeeps();
 		Delay.msDelay(800);
 
-		LOGGER.debug("test");
 		var motors = new Pilot(
 				motorLeft,
 				motorRight,

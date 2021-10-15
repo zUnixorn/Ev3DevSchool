@@ -47,14 +47,14 @@ public class ExperimentMain {
 		Delay.msDelay(2000);
 
 
-		int startingTachoCount = motors.getTachoCount();
+		int startingTachoCount = motors.getTachoCount(true);
 
 		motors.driveForward();
 
-		int curveRadius = 15;
-		int cmToDrive = 100;
+		int curveRadius = 35;
+		int cmToDrive = 200;
 		while (true) {
-			int tachoDelta = startingTachoCount - motors.getTachoCount();
+			int tachoDelta = startingTachoCount - motors.getTachoCount(true);
 			if (tachoDelta >= cmToDrive) {
 				break;
 			}
@@ -65,7 +65,7 @@ public class ExperimentMain {
 				motors.driveCentimeters(-15);
 				cmToDrive += 15;
 
-				motors.driveCurveDegrees(180, curveRadius);
+				motors.driveCurveDegrees(180, curveRadius, true);
 
 				cmToDrive += 2 * curveRadius;
 			}

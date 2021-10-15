@@ -117,12 +117,11 @@ public class Pilot {
 		}
 	}
 
-	public int getTachoCount() {
-		int tacho = 0;
-		tacho += motorLeft.getTachoCount();
-		tacho += motorRight.getTachoCount();
-
-		return tacho / 2;
+	public int getTachoCount(boolean left) {
+		if (left) {
+			return motorLeft.getTachoCount();
+		}
+		return motorRight.getTachoCount();
 	}
 	private int cmToAngle(int cm) {
 		return (int) ((cm / wheelCircumference) * 360);

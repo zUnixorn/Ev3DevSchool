@@ -45,10 +45,14 @@ public class Pilot {
 	}
 
 	public void driveCurveDegrees(int degrees, int radius) {
-		driveCurveDegrees(degrees, radius, true);
+		driveCurveDegrees(degrees, radius, true, false);
 	}
 
 	public void driveCurveDegrees(int degrees, int radius, boolean driveLeft) {
+		driveCurveDegrees(degrees, radius, driveLeft, false);
+	}
+
+	public void driveCurveDegrees(int degrees, int radius, boolean driveLeft, boolean immediateReturn) {
 		double partOfCircle = (double) degrees / 360;
 
 		double innerCurveCircumference = (2 * (radius - (wheelDistance / 2)) * Math.PI);
@@ -76,46 +80,50 @@ public class Pilot {
 		}
 
 
-		motorRight.waitComplete();
-		motorLeft.waitComplete();
-
-//		System.out.println("inner curve circumference: " + innerCurveCircumference);
-//		System.out.println("outer curve circumference: " + outerCurveCircumference);
-//
-//		System.out.println("inner curve angle: " + innerCurveAngle);
-//		System.out.println("outer curve angle: " + outerCurveAngle);
-//
-//		System.out.println("Speed coefficient: " + speedCoEfficient);
-//		System.out.println("Inner motor speed: " + innerSpeed);
-//
-//		System.out.println("Circle degrees part factor: " + partOfCircle);
-//
-//		System.out.println("inner circle half: " + Math.round(partOfCircle * innerCurveAngle));
-//		System.out.println("outer circle half: " + Math.round(partOfCircle * outerCurveAngle));
-
+		if(!immediateReturn) {
+			waitMotorsComplete();
+		}
 	}
 
 	public void turnDegrees(int degrees) {
+		turnDegrees(degrees, false);
+	}
+
+	public void turnDegrees(int degrees, boolean immediateReturn) {
 		setSpeed(slowMotorSpeed);
 		double angleToRotate = cmToAngle((((double) degrees) / 360) * Math.PI * wheelDistance);
-
-		System.out.println("The angle to rotate is " + angleToRotate);
 
 		motorLeft.rotate((int) angleToRotate * -1, true);
 		motorRight.rotate((int) angleToRotate, true);
 
-		motorRight.waitComplete();
+		if (!immediateReturn) {
+			waitMotorsComplete();
+		}
 		setSpeed(motorSpeed);
 	}
 
 	public void driveCentimeters(int distance) {
+		driveCentimeters(distance, false);
+	}
+
+	public void driveCentimeters(int distance, boolean immediateReturn) {
 		int angleToRotate = cmToAngle(distance);
 
 		motorLeft.rotate(angleToRotate, true);
 		motorRight.rotate(angleToRotate, true);
-		motorRight.waitComplete();
+
+		if (!immediateReturn) {
+			waitMotorsComplete();
+		}
 	}
 
+	public int getTachoCount() {
+		int tacho = 0;
+		tacho += motorLeft.getTachoCount();
+		tacho += motorRight.getTachoCount();
+
+		return tacho / 2;
+	}
 	private int cmToAngle(int cm) {
 		return (int) ((cm / wheelCircumference) * 360);
 	}
@@ -135,11 +143,21 @@ public class Pilot {
 
 	public void driveForward() {
 		motorLeft.forward();
-		motorLeft.forward();
+		motorRight.forward();
+	}
+
+	public void driveBackward() {
+		motorLeft.backward();
+		motorRight.backward();
 	}
 
 	public void stop() {
 		motorLeft.stop();
 		motorRight.stop();
+	}
+
+	private void waitMotorsComplete() {
+		this.motorRight.waitComplete();
+		this.motorLeft.waitComplete();
 	}
 }

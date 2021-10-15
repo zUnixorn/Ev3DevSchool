@@ -2,7 +2,9 @@ package experiment;
 
 import ev3dev.actuators.Sound;
 import ev3dev.actuators.lego.motors.EV3LargeRegulatedMotor;
+import ev3dev.sensors.ev3.EV3UltrasonicSensor;
 import lejos.hardware.port.MotorPort;
+import lejos.hardware.port.SensorPort;
 import lejos.utility.Delay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,16 +39,42 @@ public class ExperimentMain {
 				Constants.WHEEL_DISTANCE
 		);
 
+		var sensor = new UltrasonicSensor(
+				new EV3UltrasonicSensor(SensorPort.S3)
+		);
+
 		System.out.println("Ready");
 		Delay.msDelay(2000);
 
-		motors.driveCurveDegrees(180, 15, true);
-		motors.driveCircle(15, false);
-		motors.driveCurveDegrees(180, 15, true);
 
-//		motors.driveCentimeters(20);
-		Delay.msDelay(3000);
+		int startingTachoCount = motors.getTachoCount();
 
-		System.exit(0);
+		motors.driveForward();
+
+		int curveRadius = 15;
+		int cmToDrive = 100;
+		while (true) {
+			int tachoDelta = startingTachoCount - motors.getTachoCount();
+			if (tachoDelta >= cmToDrive) {
+				break;
+			}
+
+			if (sensor.getDistance() < 20) {
+				motors.stop();
+
+				motors.driveCentimeters(-15);
+				cmToDrive += 15;
+
+				motors.driveCurveDegrees(180, curveRadius);
+
+				cmToDrive += 2 * curveRadius;
+			}
+			motors.driveForward();
+		}
+
+		//Delay.msDelay(3000);
+
+		//System.exit(0);
 	}
+
 }

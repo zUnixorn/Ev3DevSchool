@@ -2,4 +2,4 @@ Manifest-Version: 1.0
 Implementation-Title: Ev3DevSchool
 Implementation-Version: 1.0
 Implementation-Vendor: Jakob Jungherr
-Main-Class: erste_klausur.Main
+Main-Class: experiment.ExperimentMain

@@ -39,42 +39,10 @@ public class ExperimentMain {
 				Constants.WHEEL_DISTANCE
 		);
 
-		var sensor = new UltrasonicSensor(
-				new EV3UltrasonicSensor(SensorPort.S3)
-		);
-
 		System.out.println("Ready");
-		Delay.msDelay(2000);
+		Delay.msDelay(1000);
 
-
-		int startingTachoCount = motors.getTachoCount(true);
-
-		motors.driveForward();
-
-		int curveRadius = 35;
-		int cmToDrive = 200;
-		while (true) {
-			int tachoDelta = startingTachoCount - motors.getTachoCount(true);
-			if (tachoDelta >= cmToDrive) {
-				break;
-			}
-
-			if (sensor.getDistance() < 20) {
-				motors.stop();
-
-				motors.driveCentimeters(-15);
-				cmToDrive += 15;
-
-				motors.driveCurveDegrees(180, curveRadius, true);
-
-				cmToDrive += 2 * curveRadius;
-			}
-			motors.driveForward();
-		}
-
-		//Delay.msDelay(3000);
-
-		//System.exit(0);
+		motors.driveCentimeters(100);
 	}
 
 }

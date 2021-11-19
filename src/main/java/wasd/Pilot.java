@@ -8,7 +8,7 @@ import lejos.hardware.port.SensorPort;
 import lejos.robotics.SampleProvider;
 
 public class Pilot {
-    private final EV3UltrasonicSensor ultrasonic = new EV3UltrasonicSensor(SensorPort.S3);
+    private final EV3UltrasonicSensor ultrasonic = new EV3UltrasonicSensor(SensorPort.S1);
     private final EV3LargeRegulatedMotor motorLeft = new EV3LargeRegulatedMotor(MotorPort.A);
     private final EV3LargeRegulatedMotor motorRight = new EV3LargeRegulatedMotor(MotorPort.B);
 
@@ -131,6 +131,16 @@ public class Pilot {
         this.motorLeft.rotate(rotation, true);
 
         this.awaitMotors();
+    }
+
+    public void turnRight() {
+        this.motorLeft.forward();
+        this.motorRight.backward();
+    }
+
+    public void turnLeft() {
+        this.motorLeft.backward();
+        this.motorRight.forward();
     }
 
     public void turnLeft(int angle) {

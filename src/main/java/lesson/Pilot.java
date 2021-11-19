@@ -7,14 +7,16 @@ import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.robotics.SampleProvider;
 
+import java.io.File;
+
 public class Pilot {
-    private final EV3UltrasonicSensor ultrasonic = new EV3UltrasonicSensor(SensorPort.S3);
+    private final EV3UltrasonicSensor ultrasonic = new EV3UltrasonicSensor(SensorPort.S2);
     private final EV3LargeRegulatedMotor motorLeft = new EV3LargeRegulatedMotor(MotorPort.A);
     private final EV3LargeRegulatedMotor motorRight = new EV3LargeRegulatedMotor(MotorPort.B);
 
     public SampleProvider samples = ultrasonic.getDistanceMode();
 
-    private final int SPEED = 725;
+    private final int SPEED = 300;
     private final float WHEEL_CIRCUMFERENCE = 17.5f;
     private final float WHEEL_DISTANCE = 11.3f;
 
@@ -87,27 +89,27 @@ public class Pilot {
 
         double fractionOfCircle = (double) angle / 360;
 
-        double rightDistance;
-        double leftDistance;
+        double rightAngle;
+        double leftAngle;
 
         int rightSpeed = this.SPEED;
         int leftSpeed = this.SPEED;
 
         if (right) {
-            rightDistance = this.getInnerAngle(diameter);
-            leftDistance = this.getOuterAngle(diameter);
-            rightSpeed = (int) Math.round(Math.abs(rightDistance / leftDistance) * (double) this.SPEED);
+            rightAngle = this.getInnerAngle(diameter);
+            leftAngle = this.getOuterAngle(diameter);
+            rightSpeed = (int) Math.round(Math.abs(rightAngle / leftAngle) * (double) this.SPEED);
         } else {
-            leftDistance = this.getInnerAngle(diameter);
-            rightDistance = this.getOuterAngle(diameter);
-            leftSpeed = (int) Math.round(Math.abs(leftDistance / rightDistance) * (double) this.SPEED);
+            leftAngle = this.getInnerAngle(diameter);
+            rightAngle = this.getOuterAngle(diameter);
+            leftSpeed = (int) Math.round(Math.abs(leftAngle / rightAngle) * (double) this.SPEED);
         }
 
         this.motorLeft.setSpeed(leftSpeed);
         this.motorRight.setSpeed(rightSpeed);
 
-        this.motorRight.rotate((int) Math.round(rightDistance * fractionOfCircle), true);
-        this.motorLeft.rotate((int) Math.round(rightDistance * fractionOfCircle), true);
+        this.motorRight.rotate((int) Math.round(rightAngle * fractionOfCircle), true);
+        this.motorLeft.rotate((int) Math.round(rightAngle * fractionOfCircle), true);
 
         this.motorRight.waitComplete();
         this.motorLeft.waitComplete();
@@ -140,6 +142,10 @@ public class Pilot {
     public void awaitMotors() {
         this.awaitMotorLeft();
         this.awaitMotorRight();
+    }
+
+    public void play(File file) {
+        Sound.getInstance().playSample(file);
     }
 
     public void awaitMotorLeft() {

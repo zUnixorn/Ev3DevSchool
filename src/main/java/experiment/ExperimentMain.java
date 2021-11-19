@@ -4,7 +4,6 @@ import ev3dev.actuators.Sound;
 import ev3dev.actuators.ev3.EV3Led;
 import ev3dev.actuators.lego.motors.EV3LargeRegulatedMotor;
 import ev3dev.sensors.ev3.EV3UltrasonicSensor;
-import lejos.hardware.LED;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.utility.Delay;
@@ -13,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.DataOutputStream;
 import java.net.ServerSocket;
-import java.net.Socket;
 
 public class ExperimentMain {
 
@@ -61,7 +59,70 @@ public class ExperimentMain {
 		var sampleProvider = ultrasonicSensor.getDistanceMode();
 		var values = new float[sampleProvider.sampleSize()];
 
-		var blinkThread = new Thread(() -> {
+//		var blinkThread = new Thread(() -> {
+//			System.out.println("Blinkthread startet executing.");
+//			var leftLed = new EV3Led(EV3Led.Direction.LEFT);
+//			var rightLed = new EV3Led(EV3Led.Direction.RIGHT);
+//
+//			// 0 is off
+//			// 1 is green
+//			// 2 is red
+//			// 3 is yellow
+//			while (true) {
+//				try {
+//					long sleepTime = 500;
+//					leftLed.setPattern(1);
+//					Thread.sleep(sleepTime);
+//					leftLed.setPattern(0);
+//					rightLed.setPattern(2);
+//					Thread.sleep(sleepTime);
+//					rightLed.setPattern(0);
+//
+//					if (Thread.interrupted()) {
+//						break;
+//					}
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+
+		var blinkThread = getNewBlinkThread();
+
+		while (true) {
+			try (
+					ServerSocket serverSocket = new ServerSocket(6969);
+					var client = serverSocket.accept();
+					DataOutputStream out = new DataOutputStream(client.getOutputStream());
+			) {
+				blinkThread.start(); // Start blinking when sending values
+				while (true) {
+					sampleProvider.fetchSample(values, 0);
+					out.writeFloat(values[0]);
+				}
+			} catch (Exception ignore) {
+
+			} finally {
+				try {
+					blinkThread.interrupt();
+				} catch (Exception ignore) {
+
+				} finally {
+					blinkThread = getNewBlinkThread();
+				}
+
+				System.out.println("Connection got interrupted");
+				var leftLed = new EV3Led(EV3Led.Direction.LEFT);
+				var rightLed = new EV3Led(EV3Led.Direction.RIGHT);
+
+				leftLed.setPattern(2);
+				rightLed.setPattern(2);
+			}
+		}
+	}
+
+	static Thread getNewBlinkThread() {
+		return new Thread(() -> {
 			System.out.println("Blinkthread startet executing.");
 			var leftLed = new EV3Led(EV3Led.Direction.LEFT);
 			var rightLed = new EV3Led(EV3Led.Direction.RIGHT);
@@ -72,35 +133,21 @@ public class ExperimentMain {
 			// 3 is yellow
 			while (true) {
 				try {
-					long sleepTime = 500;
+					leftLed.setPattern(0);
+					rightLed.setPattern(0);
+
+					long sleepTime = 50;
 					leftLed.setPattern(1);
 					Thread.sleep(sleepTime);
 					leftLed.setPattern(0);
-					rightLed.setPattern(2);
-					Thread.sleep(sleepTime);
-					rightLed.setPattern(0);
-				} catch (Exception e) {
-					e.printStackTrace();
+					if (Thread.interrupted()) {
+						break;
+					}
+				} catch (Exception ignore) {
+
 				}
 			}
+			rightLed.setPattern(2);
 		});
-
-		System.out.println("Starting Blinkthread");
-		blinkThread.start();
-
-
-		try (
-				ServerSocket serverSocket = new ServerSocket(6969);
-				var client = serverSocket.accept();
-				DataOutputStream out = new DataOutputStream(client.getOutputStream());
-		) {
-			while(true) {
-				sampleProvider.fetchSample(values, 0);
-				out.writeFloat(values[0]);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
-
 }

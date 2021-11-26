@@ -16,6 +16,7 @@ repositories {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation 'org.knowm.xchart:xchart:3.8.1'
     implementation("org.slf4j:slf4j-simple:1.7.25")
     implementation("com.github.ev3dev-lang-java:ev3dev-lang-java:2.6.2-SNAPSHOT")
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'

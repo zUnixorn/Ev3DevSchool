@@ -1,32 +1,51 @@
 package twowayrobotconnection.pcserver;
 
+import org.knowm.xchart.SwingWrapper;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
 import org.knowm.xchart.style.Styler;
 
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
+
 
 public class UltrasonicChart extends Thread {
     LinkedList<Float> data = new LinkedList<Float>(Arrays.asList());
-    XYChart ultrasonic_chart;
+    XYChart ultrasonicChart;
+    LinkedList<Float> xAxis = new LinkedList<Float>(Arrays.asList());
+    SwingWrapper<XYChart> swingUC;
 
-    public void run() {
+    UltrasonicChart() {
+        super();
+
         for (int i = 0; i < 200; i++) {
-            data.add((float) i);
+            data.add(0.0f);
+            xAxis.add((float) i);
         }
 
-        ultrasonic_chart = new XYChartBuilder().width(800).height(800).theme(Styler.ChartTheme.Matlab).build();
+        ultrasonicChart = new XYChartBuilder().width(16 * 100).height(9 * 100).theme(Styler.ChartTheme.Matlab).build();
 
-        ultrasonic_chart.addSeries("values", data);
+        swingUC = new SwingWrapper<XYChart>(ultrasonicChart);
 
+        ultrasonicChart.addSeries("values", xAxis, data);
+
+        swingUC.displayChart();
+    }
+
+    public void run() {
         while (true) {
-            ultrasonic_chart.updateXYSeries("values", null, data, null);
+            try {
+                ultrasonicChart.updateXYSeries("values", xAxis, data, null);
+                swingUC.repaintChart();
+                Thread.sleep(100, 0);
+            } catch (ConcurrentModificationException | IllegalArgumentException | NullPointerException | InterruptedException ignore) {}
         }
     }
 
     public void updateData(float dataValue) {
-        data.pop();
-        data.addFirst(dataValue);
+        System.out.println(dataValue);
+        data.removeFirst();
+        data.add(dataValue);
     }
 }

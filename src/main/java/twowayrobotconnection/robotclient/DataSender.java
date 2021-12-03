@@ -5,7 +5,7 @@ import java.net.*;
 
 public class DataSender extends Thread {
     UltrasonicSensor ultrasonicSensor = new UltrasonicSensor();
-    InetAddress serverIp = InetAddress.getByAddress(new byte[] {10, 42, 0, (byte) 167});
+    InetAddress serverIp = InetAddress.getByAddress(new byte[] {(byte) 10,(byte) 42,(byte) 0, (byte) 167});
     DatagramSocket server;
 
     public DataSender() throws UnknownHostException {

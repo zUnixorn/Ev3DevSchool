@@ -7,8 +7,10 @@ import java.net.SocketException;
 import java.nio.ByteBuffer;
 
 public class DataReceiver extends Thread {
+    byte[] buffer = new byte[4];
+
     DatagramSocket robotUdp = new DatagramSocket(8000);
-    DatagramPacket latestPacket;
+    DatagramPacket latestPacket = new DatagramPacket(buffer, 4);
     float ultrasonicValue = 0.0f;
 
     public DataReceiver() throws SocketException {
@@ -18,11 +20,8 @@ public class DataReceiver extends Thread {
         while (true) {
             try {
                 robotUdp.receive(latestPacket);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            ultrasonicValue = ByteBuffer.wrap(latestPacket.getData()).getFloat();
+                ultrasonicValue = ByteBuffer.wrap(latestPacket.getData()).getFloat();
+            } catch (IOException ignore) {}
         }
     }
 

@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -21,8 +22,10 @@ public class Main {
         ultrasonicChart.start();
 
         while (true) {
-            System.out.write(clear);
-            ultrasonicChart.updateData(dataReceiver.getUltrasonicValue());
+            //System.out.write(clear);
+            try {
+                ultrasonicChart.updateData(dataReceiver.getUltrasonicValue());
+            } catch (ConcurrentModificationException ignore) {}
         }
     }
 }

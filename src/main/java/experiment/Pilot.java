@@ -5,7 +5,7 @@ import ev3dev.actuators.lego.motors.EV3LargeRegulatedMotor;
 public class Pilot {
 	private final EV3LargeRegulatedMotor motorLeft;
 	private final EV3LargeRegulatedMotor motorRight;
-	private final int motorSpeed;
+	private int motorSpeed;
 	private final int slowMotorSpeed;
 	private final double wheelCircumference;
 	private final double wheelDistance;
@@ -80,7 +80,7 @@ public class Pilot {
 		}
 
 
-		if(!immediateReturn) {
+		if (!immediateReturn) {
 			waitMotorsComplete();
 		}
 	}
@@ -100,6 +100,26 @@ public class Pilot {
 			waitMotorsComplete();
 		}
 		setSpeed(motorSpeed);
+	}
+
+	public void turnLeft() {
+		motorLeft.backward();
+		motorRight.forward();
+	}
+
+	public void turnRight() {
+		motorLeft.forward();
+		motorRight.backward();
+	}
+
+	public void speedUp(int speedUp) {
+		this.motorSpeed += speedUp;
+		setSpeed(this.motorSpeed);
+	}
+
+	public void speedDown(int speedDown) {
+		this.motorSpeed -= speedDown;
+		setSpeed(this.motorSpeed);
 	}
 
 	public void driveCentimeters(int distance) {
@@ -123,6 +143,7 @@ public class Pilot {
 		}
 		return motorRight.getTachoCount();
 	}
+
 	private int cmToAngle(int cm) {
 		return (int) ((cm / wheelCircumference) * 360);
 	}
